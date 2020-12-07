@@ -1,0 +1,9 @@
+.idea/
+*.tar.gz
+*.gz
+*.tar
+Input/
+build/
+dist/
+*__pycache__*
+*.spec
