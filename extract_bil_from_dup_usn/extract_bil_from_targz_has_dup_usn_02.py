@@ -29,8 +29,12 @@ def extract_tar_n_get_out_dir(path_of_tar_gz):
     return extracted_folder_path
 
 
-def read_a_tar_gz_having_dup_usn_n_extract_bil(path_of_tar_gz,input_base_directory):
-    out_dir = os.path.join(input_base_directory, "Bil_Out_dir")
+def read_a_tar_gz_having_dup_usn_n_extract_bil(path_of_tar_gz,input_base_directory, outdir=None):
+    if outdir is None:
+        out_dir = os.path.join(input_base_directory, "Bil_Out_dir")
+    else:
+        out_dir = outdir
+
     location_zipped_bil_files_folders = extract_tar_n_get_out_dir(path_of_tar_gz)
 
     delete_location_zipped_bil_files_folders = True
@@ -52,18 +56,20 @@ def read_a_tar_gz_having_dup_usn_n_extract_bil(path_of_tar_gz,input_base_directo
             shutil.rmtree(location_zipped_bil_files_folders)
 
 
-def extract_bill_from_all_tar_gz(input_base_directory):
+def extract_bill_from_all_tar_gz(input_base_directory, out_dir):
     file_list = os.listdir(input_base_directory)
     for file in file_list:
         if file.endswith(".tar.gz"):
             file_path = os.path.join(input_base_directory, file)
-            read_a_tar_gz_having_dup_usn_n_extract_bil(file_path, input_base_directory)
+            read_a_tar_gz_having_dup_usn_n_extract_bil(file_path, input_base_directory, out_dir)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("Input_dir_having_tar_gz_file", help="Please provide the location where input *tar.gz files are located")
+    parser.add_argument("Output_directory", help="Please provide the absolute path for output directory")
     args = parser.parse_args()
     Base_input_directory = args.Input_dir_having_tar_gz_file
-    extract_bill_from_all_tar_gz(Base_input_directory)
+    out_put_directory = args.Output_directory
+    extract_bill_from_all_tar_gz(Base_input_directory, out_put_directory)
 
