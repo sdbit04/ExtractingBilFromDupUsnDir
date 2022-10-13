@@ -15,7 +15,26 @@ def extract_tar_n_get_out_dir(path_of_tar_gz):
         date_time_of_input_file = match.group().rstrip(".tar.gz")
 
     with tarfile.open(path_of_tar_gz, 'r:gz') as tf:
-        tf.extractall(input_dir_name)
+        def is_within_directory(directory, target):
+            
+            abs_directory = os.path.abspath(directory)
+            abs_target = os.path.abspath(target)
+        
+            prefix = os.path.commonprefix([abs_directory, abs_target])
+            
+            return prefix == abs_directory
+        
+        def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+        
+            for member in tar.getmembers():
+                member_path = os.path.join(path, member.name)
+                if not is_within_directory(path, member_path):
+                    raise Exception("Attempted Path Traversal in Tar File")
+        
+            tar.extractall(path, members, numeric_owner=numeric_owner) 
+            
+        
+        safe_extract(tf, input_dir_name)
 
     report_file_to_delete = os.path.join(input_dir_name, date_time_of_input_file + "_report.tar.gz")
     print("delete " + report_file_to_delete)
